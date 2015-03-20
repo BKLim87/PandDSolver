@@ -3,12 +3,15 @@ Created on 2-115. 3. 2-1.
 
 @author: bklim
 '''
+from Puzzle import Puzzle 
+import itertools
 
 class PuzzleMap(object):
     '''
+    Puzzle Color
     -1 = None, 0 = fire, 1 = water, 2 = grass, 3 = light, 4 = dark, 5 = heart, 6 = block, 7 = poison
     '''
-    Map = None
+    Map = []
     
     
 
@@ -19,7 +22,12 @@ class PuzzleMap(object):
         self.clear()
     
     def clear(self):
-        self.Map = [[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1]]
+        self.Map = []
+        for x in range(0,5):
+            temprow = []
+            for y in range(0,6):
+                temprow.append(Puzzle(-1, False))
+            self.Map.append(temprow)
         
     def setPuzzle(self, rowcol, puzzle):
         self.Map[rowcol[0]][rowcol[1]] = puzzle
@@ -28,51 +36,126 @@ class PuzzleMap(object):
         return self.Map[rowcol[0]][rowcol[1]]    
     
     def run(self):
-        for rown in range(0,5):
-            for col in range(0,6):
-                break
-            break
-        return
-    
-    def findPop(self, rowcol):
-        Color = self.getPuzzle(rowcol)
-        TempBoolMap = [[False]*6,[False]*6,[False]*6,[False]*6,[False]*6]
+        onestepPops = findPops()
         
-        for rown in range(0,5):
-            for coln in range(0,6):
-                if self.Map[rown][coln] == Color:
-                    TempBoolMap[rown][coln] == True
-                    
-    def findGlueSet(self, BoolMap):
-        for rown in range(0,5):
-            for coln in range(0,6):
-                if BoolMap[rown][coln] == True:
-                    NearSame = self.findNearSamePuzzleRowNCol(BoolMap, [rown, coln])
-                    return        
-        return
     
-    def findNearSamePuzzles(self, Map, rowcol):
-        NearSame = self.findNearSamePuzzleRowNCol(Map, rowcol)        
-        if NearSame != []:
-            return NearSame
-        else:
-            for xy in NearSame:
-                self.findNearSamePuzzles(Map, xy)
-                
-                asdfijasdfijasdfijsodfij
-                asdoifjoasdifjosdifjoasdijf
-                
-            return NearSame 
-        
-    def findNearSamePuzzleRowNCol(self, Map, rowcol):
-        rown = rowcol[0]
-        coln = rowcol[1]        
+    def findPops(self):
+        [HorMap, VerMap] = self.ThreeRowHorVerMap()
+        willPopDic = {}
+        for Color in range(1, 8):
+            willPopDic[Color] = []
+            ColorHorMap = HorMap.copy()
+            ColorVerMap = VerMap.copy()
             
-        NearRowNCol = [[rown+1, coln], [rown-1, coln], [rown, coln+1], [rown, coln-1]]
-        NearSameRowNCol = []
+            for x in range(0,5):
+                for y in range(0,4):
+                    if ColorHorMap[x][y] != Color:
+                        ColorHorMap[x][y] = -1
+            
+            for x in range(0,3):
+                for y in range(0,6):
+                    if ColorVerMap[x][y] != Color:
+                        ColorVerMap[x][y] = -1
+                        
+            willPoPRowCol = self.getRowColfromHorVerMap(HorMap, VerMap)
+            stacks = self.getStacks(willPoPRowCol)
+            willPopDic[Color] = willPopDic[Color] + stacks.copy()
         
-        for [x,y] in NearRowNCol:
-            if Map[rown][coln] == Map[x][y] and x>=0 and x<=4 and y>=0 and y<=5:
-                NearSameRowNCol.append([x,y])
+        return willPopDic
+            
+    def getStacks(self, rclist):
+        if len(rclist) == 0:
+            return []
+        
+        temprclist = rclist.copy()
+        stacks = []
+        stacks.append([temprclist.pop()])
+        while len(temprclist)>0:
+            temprc = temprclist.pop()
+            for x in range(0,len(stacks)):
+                for rc in stacks[x]:
+                    if self.isNearRowCol(rc, temprc):
+                        stacks[x].append(temprc)
+                        
+        mergeFlag = True
+        while mergeFlag:
+            mergeFlag = False
+            for [x,y] in itertools.product(range(len(stacks)), range(len(stacks))):
+                if x != y:
+                    if self.isNearStack(stacks[x], stacks[y]):
+                        mergeFlag = True
+                        stacks[x] = stacks[x] + stacks[y]
+                        stacks.remove(stacks[y])
+                        break
+        
+        return stacks
+    
+    def isNearStack(self, stack1, stack2):
+        for rc1 in stack1:
+            for rc2 in stack2:
+                if self.isNearRowCol(rc1, rc2):
+                    return True
+        return False
                 
-        return NearSameRowNCol
+    def getRowColfromHorVerMap(self, HorMap, VerMap):
+        RClist = []
+        for x in range(0,5):
+            for y in range(0,4):
+                if HorMap[x][y] >=0:
+                    RClist.append([x,y])
+                    RClist.append([x,y+1])
+                    RClist.append([x,y+2])
+        
+        for x in range(0,3):
+            for y in range(0,6):
+                if VerMap[x][y] >=0:
+                    RClist.append([x,y])
+                    RClist.append([x+1,y])
+                    RClist.append([x+2,y])
+        
+        uniqueRClist = []
+        RClist.sort()
+        uniqueRClist.append(RClist[0])
+        olderrc = RClist[0]
+        for rc in RClist:
+            if olderrc != rc:
+                olderrc = rc
+                uniqueRClist.append(rc)
+        
+        return uniqueRClist
+                        
+    def isNearRowCol(self, rowcol1, rowcol2):
+        disRow = rowcol1[0] - rowcol2[0]
+        disCol = rowcol1[1] - rowcol2[1]
+        dis = disRow*disRow + disCol*disCol
+        if dis == 1:
+            return True
+        else:
+            return False
+    
+    def ThreeRowHorVerMap(self):
+        HorMap = [[-1]*4, [-1]*4, [-1]*4, [-1]*4, [-1]*4]
+        VerMap = [[-1]*6, [-1]*6, [-1]*6]
+        
+        for rown in range(0,5):
+            for coln in range(0,4):
+                targetColor = self.getPuzzle([rown, coln]).Color
+                Flag = True
+                for x in range(1,3):
+                    if targetColor != self.getPuzzle([rown, coln+x]).Color:
+                        HorFlag = False
+                if Flag == True:
+                    HorMap[rown][coln] = targetColor
+        
+        for rown in range(0,3):
+            for coln in range(0,6):
+                targetColor = self.getPuzzle([rown, coln]).Color
+                Flag = True
+                for x in range(1,3):
+                    if targetColor != self.getPuzzle([rown+x, coln]).Color:
+                        Flag = False
+                if HorFlag == True:
+                    VerMap[rown][coln] = targetColor
+        
+        return [HorMap, VerMap]
+    
