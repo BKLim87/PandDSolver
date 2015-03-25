@@ -7,10 +7,6 @@ from Puzzle import Puzzle
 import itertools
 import types
 
-
-
-
-
 class PuzzleMap(object):
     '''
     Puzzle Color
@@ -77,12 +73,12 @@ class PuzzleMap(object):
                         ColorVerMap[x][y] = -1
                         
             willPoPRowCol = self.getRowColfromHorVerMap(ColorHorMap, ColorVerMap)
-            stacks = self.getStacks(willPoPRowCol)
+            stacks = self.getPopStacks(willPoPRowCol)
             willPopDic[Color] = willPopDic[Color] + stacks.copy()
         
         return willPopDic
             
-    def getStacks(self, rclist):
+    def getPopStacks(self, rclist):
         if len(rclist) == 0:
             return []
         
@@ -195,9 +191,45 @@ class PuzzleMap(object):
             pass
         
         return result
+    
+    def getNearStacks(self):
+        NearStacks = {}
+        NearStacks[0] = []
+        NearStacks[1] = []
+        NearStacks[2] = []
+        NearStacks[3] = []
+        NearStacks[4] = []
+        NearStacks[5] = []
+        NearStacks[6] = []
+        NearStacks[7] = []
+        for [x,y] in itertools.product(range(0,5), range(0,6)):
+            NearStacks[self.getPuzzle([x,y]).Color].append([[x,y]])
+        
+        flag =True
+        while flag:
+            flag = False
+            near = {}
+            for Color in range(0,8):
+                for [x,y] in itertools.product(range(len(NearStacks[Color])),range(len(NearStacks[Color]))):
+                    if x != y:
+                        if self.isNearStack(NearStacks[Color][x], NearStacks[Color][y]):
+                            near[Color] = [NearStacks[Color][x], NearStacks[Color][y]]
+                            break
+            
+            for aColor in near.keys():
+                [A,B] = near[aColor]
+                NearStacks[aColor].remove(A)
+                NearStacks[aColor].remove(B)
+                A.extend(B)
+                NearStacks[aColor].append(A)
+                flag = True
+            pass
+        return NearStacks
+            
+            
 
 if __name__ == "__main__":
     PM = PuzzleMap()
-    PM.setPuzzlesbyNumber('111111122222133333444444555555')
+    PM.setPuzzlesbyNumber('000000111111222222333333444444')
     PM.run()
     pass    
