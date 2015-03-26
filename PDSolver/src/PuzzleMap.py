@@ -44,9 +44,17 @@ class PuzzleMap(object):
         return self.Map[rowcol[0]][rowcol[1]]    
     
     def run(self):
-        onestepPops = self.findPops()
-        print(onestepPops)
+        onestepPopPuzzle = self.findPops()
+        onestepNearPuzzle = self.getNearStacks()
         
+        
+        
+        pass
+    
+    def getPopPuzzles(self, Pop, Near):
+        for aColor in Pop.keys:
+            for alist in Pop[aColor]:
+                
         pass
     
     def removePops(self, onestepPops):
@@ -57,7 +65,7 @@ class PuzzleMap(object):
     def findPops(self):
         [HorMap, VerMap] = self.ThreeRowHorVerMap()
         willPopDic = {}
-        for Color in range(1, 8):
+        for Color in range(0, 8):
             willPopDic[Color] = []
             ColorHorMap = self.ValueCopy(HorMap)
             ColorVerMap = self.ValueCopy(VerMap)
@@ -72,9 +80,8 @@ class PuzzleMap(object):
                     if ColorVerMap[x][y] != Color:
                         ColorVerMap[x][y] = -1
                         
-            willPoPRowCol = self.getRowColfromHorVerMap(ColorHorMap, ColorVerMap)
-            stacks = self.getPopStacks(willPoPRowCol)
-            willPopDic[Color] = willPopDic[Color] + stacks.copy()
+            willPopRowCol = self.getRowColfromHorVerMap(ColorHorMap, ColorVerMap)
+            willPopDic[Color] = willPopRowCol
         
         return willPopDic
             
@@ -94,7 +101,7 @@ class PuzzleMap(object):
                         stacks[x].append(temprc)
                         break
                         break
-            stacks.append([temprc])
+            
         mergeFlag = True
         while mergeFlag:
             mergeFlag = False
