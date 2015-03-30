@@ -3,7 +3,8 @@ Created on 2-115. 3. 2-1.
 
 @author: bklim
 '''
-from Puzzle import Puzzle 
+from Puzzle import Puzzle
+from PopInfo import PopInfo  
 import itertools
 import types
 
@@ -44,22 +45,40 @@ class PuzzleMap(object):
         return self.Map[rowcol[0]][rowcol[1]]    
     
     def run(self):
-        onestepPopPuzzle = self.findPops()
-        onestepNearPuzzle = self.getNearStacks()
+        PI = PopInfo()
         
+        while True:
+            onestepPopPuzzle = self.findPops()
+            onestepNearPuzzle = self.getNearStacks()
+            PI.addPopPuzzleDict(self.getPopPuzzles(onestepPopPuzzle, onestepNearPuzzle))
+            self.removePops(onestepPopPuzzle)
+            if len(onestepPopPuzzle.values()) == 0:oweifhaoifdhosiofi
+                break
         
-        
-        pass
+        return PI
     
     def getPopPuzzles(self, Pop, Near):
-        for aColor in Pop.keys:
-            for alist in Pop[aColor]:
-                
+        Pops = {}
+        for aColor in Pop.keys():
+            Pops[aColor] = []
+            if len(Pop[aColor]) > 0:
+                for alist in Near[aColor]:
+                    templist = []                
+                    for blist in Pop[aColor]:                    
+                        if blist in alist:
+                            templist.append(blist)
+                    Pops[aColor].append(templist)
+        return Pops
+    
+    def FlushPops(self):
+        
         pass
     
-    def removePops(self, onestepPops):
-        
-    
+    def removePops(self, onestepPops):     
+        for aColor in onestepPops.keys():
+            for aRC in onestepPops[aColor]:
+                temppuzzle = Puzzle(-1, False)
+                self.setPuzzle(aRC, temppuzzle)            
         pass    
     
     def findPops(self):
@@ -210,7 +229,8 @@ class PuzzleMap(object):
         NearStacks[6] = []
         NearStacks[7] = []
         for [x,y] in itertools.product(range(0,5), range(0,6)):
-            NearStacks[self.getPuzzle([x,y]).Color].append([[x,y]])
+            if self.getPuzzle([x,y]).Color != -1:
+                NearStacks[self.getPuzzle([x,y]).Color].append([[x,y]])
         
         flag =True
         while flag:
