@@ -31,8 +31,12 @@ class PopInfo(object):
     def calcPopPuzzle(self):
         PopPuzzleNum = {}
         for aColor in self.PopPuzzleDict.keys():
+            PopPuzzleNum[aColor] = []
             for alist in self.PopPuzzleDict[aColor]:
-                PopPuzzleNum[aColor] = len(alist)
+                PopPuzzleNum[aColor].append(self.checkPop(alist))
         return PopPuzzleNum
+    
+    def checkPop(self, alist):
+        return len(alist)
     
         

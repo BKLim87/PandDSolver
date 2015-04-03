@@ -52,7 +52,12 @@ class PuzzleMap(object):
             onestepNearPuzzle = self.getNearStacks()
             PI.addPopPuzzleDict(self.getPopPuzzles(onestepPopPuzzle, onestepNearPuzzle))
             self.removePops(onestepPopPuzzle)
-            if len(onestepPopPuzzle.values()) == 0:oweifhaoifdhosiofi
+            
+            movepuzzle = 0
+            for alist in onestepPopPuzzle.values():
+                movepuzzle = movepuzzle + len(alist)
+            
+            if movepuzzle == 0:
                 break
         
         return PI
