@@ -15,6 +15,7 @@ class Monster(object):
     TwoWay = []
     RowAwake = []
     ColorAwake = []
+    Hp = 0
 
     def __init__(self):
         '''
@@ -22,7 +23,7 @@ class Monster(object):
         '''
         pass
     
-    def settings(self, fc, sc, at, he, tw, ra, ca):
+    def settings(self, fc, sc, at, he, tw, ra, ca, h):
         self.FirstColor = fc
         self.SecondColor = sc
         self.Attack = at
@@ -30,5 +31,6 @@ class Monster(object):
         self.Twoway = tw
         self.RowAwake = ra
         self.ColorAwake = ca
+        self.Hp = h
     
     

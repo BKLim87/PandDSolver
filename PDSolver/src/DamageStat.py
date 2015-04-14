@@ -23,5 +23,31 @@ class DamageStat(metaclass=ABCMeta):
     def getOneColorRowAwake(self, aColor):
         pass
     @abstractmethod()
+    def getOneColorColorAwake(self, aColor):
+        pass
+    @abstractmethod()
     def getOnePopDmg(self, OPI):
         pass
+    
+    def DamageToList(self, aColor, Dmg):
+        DmgList = [0,0,0,0,0,0,0,0]
+        DmgList[aColor] = Dmg
+        return DmgList
+    
+    def ListAdd(self, aList, bList):
+        if len(aList) == len(bList):
+            reList = []
+            for i in range(len(aList)):
+                reList.append(aList[i] + bList[i])
+            return reList
+        else:
+            return None
+        
+    def ListMultiple(self, aList, bList):
+        if len(aList) == len(bList):
+            reList = []
+            for i in range(len(aList)):
+                reList.append(aList[i] * bList[i])
+            return reList
+        else:
+            return None

@@ -3,6 +3,7 @@ Created on 2015. 3. 26.
 
 @author: bklim
 '''
+from src.OnePopInfo import OnePopInfo
 
 class PopInfo(object):
     '''
@@ -39,4 +40,37 @@ class PopInfo(object):
     def checkPop(self, alist):
         return len(alist)
     
+    def MakePopInfoList(self, Map):
+        PopInfoList = []
+        for aColor in self.PopPuzzleDict.keys():
+            for aList in self.PopPuzzleDict[aColor]:
+                PopInfoList.append(self.MakeOnePopInfo(aColor, aList, Map))
+        return PopInfoList
+    
+    def MakeOnePopInfo(self, aColor, aList, Map):
+        tempOnePopInfo = OnePopInfo()
+        
+        tempPopN = len(aList)
+        tempTwoWay = False
+        if tempPopN == 4:
+            tempTwoWay = True
+        
+        for nr in range(0,5):
+            raflag = True
+            for nc in range(0,6):
+                if [nr,nc] in aList:
+                    pass
+                else:
+                    reflag = False
+            if raflag == True:
+                tempRowAwake = True
+                break
+        
+        AwakePopN = 0
+        for arc in aList:
+            if Map[arc[0]][arc[1]].Power == True:
+                AwakePopN = AwakePopN + 1
+        
+        tempOnePopInfo.settings(aColor, tempPopN, AwakePopN, tempTwoWay, tempRowAwake)
+        return tempOnePopInfo
         

@@ -3,10 +3,9 @@ Created on 2-115. 3. 2-1.
 
 @author: bklim
 '''
-from Puzzle import Puzzle
-from PopInfo import PopInfo  
+from src.Puzzle import Puzzle
+from src.PopInfo import PopInfo  
 import itertools
-import types
 
 class PuzzleMap(object):
     '''
@@ -263,5 +262,6 @@ class PuzzleMap(object):
 if __name__ == "__main__":
     PM = PuzzleMap()
     PM.setPuzzlesbyNumber('000000111111222222333333444444')
-    PM.run()
+    PI = PM.run()
+    ppp = PI.MakePopInfoList(PM.Map)
     pass    
